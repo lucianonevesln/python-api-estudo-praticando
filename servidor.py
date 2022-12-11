@@ -15,7 +15,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql://{USER}:{PASS}@{DB_URL}/{DB}?ch
 db = SQLAlchemy(app)
 
 
-class Usuario(db.Model):
+class Usuarios(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     nome = db.Column(db.String(100))
     email = db.Column(db.String(100))
@@ -36,7 +36,7 @@ def resposta (status, nome_status, conteudo, mensagem=False):
 def cadastro():
     body = request.get_json()
     try:
-        pessoa = Usuario(nome=body['nome'], email=body['email'])
+        pessoa = Usuarios(nome=body['nome'], email=body['email'])
         db.session.add(pessoa)
         db.session.commit()
         return resposta(201, 'pessoa', pessoa.converte_json(), \
@@ -48,7 +48,7 @@ def cadastro():
 
 @app.route('/consulta/<id>', methods=['GET'])
 def consulta_um(id):
-    pessoa = Usuario.query.filter_by(id=id).first()
+    pessoa = Usuarios.query.filter_by(id=id).first()
     try:
         pessoa_json = pessoa.converte_json()
         return resposta(200, 'pessoa', pessoa_json, 'Pessoa localizada')
@@ -59,14 +59,14 @@ def consulta_um(id):
 
 @app.route('/consulta', methods=['GET'])
 def consulta_todos():
-    pessoas = Usuario.query.all()
+    pessoas = Usuarios.query.all()
     todos = [pessoa.converte_json() for pessoa in pessoas]
     return resposta(200, 'pessoas', todos, 'Todas as pessoas cadastradas.')
 
 
 @app.route('/atualiza-nome/<id>', methods=['PUT'])
 def atualiza_nome(id):
-    objeto_pessoa = Usuario.query.filter_by(id=id).first()
+    objeto_pessoa = Usuarios.query.filter_by(id=id).first()
     body = request.get_json()
     try:
         if 'nome' in body:
@@ -82,7 +82,7 @@ def atualiza_nome(id):
 
 @app.route('/atualiza-email/<id>', methods=['PUT'])
 def altera_email(id):
-    objeto_pessoa = Usuario.query.filter_by(id=id).first()
+    objeto_pessoa = Usuarios.query.filter_by(id=id).first()
     body = request.get_json()
     try:
         if 'email' in body:
@@ -98,7 +98,7 @@ def altera_email(id):
 
 @app.route('/exclui/<id>', methods=['DELETE'])
 def exclui(id):
-    objeto_pessoa = Usuario.query.filter_by(id=id).first()
+    objeto_pessoa = Usuarios.query.filter_by(id=id).first()
     try:
         db.session.delete(objeto_pessoa)
         db.session.commit()
